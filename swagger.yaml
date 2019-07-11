@@ -3,7 +3,7 @@ info:
   description: |
     This API serves evidences for a continuous audit of a system. It originated
     in the European Union Horizon 2020 project
-    [EU-SEC](https://www.sec-cert.ui). Its purpose is to support tools such as
+    [EU-SEC](https://www.sec-cert.eu). Its purpose is to support tools such as
     [Clouditor](https://www.clouditor.io) to collect evidences and evaluate them
     to determine the compliance status based on different control catalogs, such
     as the [Cloud Control Matrix](https://cloudsecurityalliance.org/group/cloud-controls-matrix).
