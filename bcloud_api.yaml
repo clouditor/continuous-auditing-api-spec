@@ -1,0 +1,1680 @@
+openapi: 3.0.0
+info:
+  description: |
+    Bayerncloud
+  version: 1.0.0
+  title: Bayerncloud Continuous Auditing API
+  termsOfService: https://bayerncloud.digital
+  contact:
+    url: https://bayerncloud.digital/kontakt/
+tags:
+  - name: Scopes
+    description: Information about the scopes of a cloud system, e.g. a subscription or a resource group.
+  - name: Storage
+    description: Information about the storage entities in a scope.
+  - name: Identity and Access Management
+    description: Information about the identity and access management of a cloud system.
+  - name: Container Services
+    description: Information about the container services in a certain scope.
+  - name: Networking
+    description: Information about the networking configuration in a certain scope. 
+  - name: VM
+    description: Information about virtual machines in a certain scope.
+  - name: Logging
+    description: Information about the logging in a certain scope.
+  - name: Security Center
+    description: Information about the security recommendations.
+  - name: Functions
+    description: Information about serverless functions.
+paths:
+  "/scopes":
+    get:
+      tags:
+        - Scopes
+      summary: Returns all scopes of the target system.
+      description: A scope can contain different kinds of resources and may, e.g. contain all components of a specific application.
+      operationId: listScopes
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListScopesResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiScope
+  "/scopes/{scopeId}":
+    get:
+      tags:
+        - Scopes
+      summary: Returns information about a specific scopes of the target system.
+      description: A scope can contain different kinds of resources and may, e.g. contain all components of a specific application.
+      operationId: getScope
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of scope to return
+          required: true
+          schema:
+            type: string      
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetScopeResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiScope      
+
+  "/scopes/{scopeId}/storages":
+    get:
+      tags:
+        - Storage
+      summary: Returns a list of storage entities.
+      description: Returns a list of storage entities, e.g. storage accounts or S3 buckets.
+      operationId: listStorages
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListStoragesResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage
+  "/scopes/{scopeId}/storages/{storageId}":
+    get:
+      tags:
+        - Storage
+      summary: Returns information about a specific storage entity.
+      operationId: getStorage
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          description: ID of the storage entity
+          required: true
+          schema:
+            type: string
+        - name: objectId
+          in: path
+          description: ID of data object to return
+          required: true
+          schema:
+            type: string            
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetStorageResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage    
+  "/scopes/{scopeId}/storages/{storageId}/objects":
+    get:
+      tags:
+        - Storage
+      summary: Returns a list of data objects in the specified storage entity.
+      operationId: getStorageObjects
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          description: ID of the storage
+          required: true
+          schema:
+            type: string          
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListObjectsResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage     
+  "/scopes/{scopeId}/storages/{storageId}/objects/{objectId}":
+    get:
+      tags:
+        - Storage
+      summary: Returns information about a specific data object.
+      operationId: getValidity
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          description: ID of the storage
+          required: true
+          schema:
+            type: string          
+        - name: objectId
+          in: path
+          description: ID of the object
+          required: true
+          schema:
+            type: string            
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetObjectResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage
+  "/scopes/{scopeId}/storages/{storageId}/replications": 
+    get:
+      tags:
+        - Storage
+      summary: Returns a list of replications of the specified storage entity.
+      description: description
+      operationId: getStorageReplications
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          description: ID of the storage
+          required: true
+          schema:
+            type: string          
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListStoragesResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage
+  "/scopes/{scopeId}/storages/{storageId}/replications/{replicationId}":
+    get:
+      tags:
+        - Storage
+      summary: Returns information about the specified storage replication.
+      operationId: getStorageReplication
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          description: ID of the storage
+          required: true
+          schema:
+            type: string          
+        - name: replicationId
+          in: path
+          description: ID of the replication
+          required: true
+          schema:
+            type: string    
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetStorageResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage
+  "/scopes/{scopeId}/storages/{storageId}/objects/{objectId}/replications": 
+    get:
+      tags:
+        - Storage
+      summary: Returns a list of replications of the specified storage entity.
+      operationId: listObjectReplications
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          description: ID of the storage
+          required: true
+          schema:
+            type: string 
+        - name: objectId
+          in: path
+          description: ID of the object
+          required: true
+          schema:
+            type: string             
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListObjectsResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage
+  "/scopes/{scopeId}/storages/{storageId}/objects/{objectId}/replications/{replicationId}":
+    get:
+      tags:
+        - Storage
+      summary: Returns a list of replications for the specified object.
+      operationId: getObjectReplication
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          description: ID of the storage
+          required: true
+          schema:
+            type: string       
+        - name: objectId
+          in: path
+          description: ID of the object
+          required: true
+          schema:
+            type: string                   
+        - name: replicationId
+          in: path
+          description: ID of the replication
+          required: true
+          schema:
+            type: string    
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetObjectResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage      
+  "/scopes/{scopeId}/storages/{storageId}/geolocation": 
+    get:
+      tags:
+        - Storage
+      summary: Returns information about the geolocation of the specified storage entity.
+      operationId: getStorageGeolocation
+      parameters:
+        - name: scopeId
+          in: path
+          description: Scope of service
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          description: Scope of service
+          required: true
+          schema:
+            type: string          
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetStorageGeolocationResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage
+  "/scopes/{scopeId}/storages/{storageId}/objects/{objectId}/geolocation":
+    get:
+      tags:
+        - Storage
+      summary: Returns the geolocation of the specified object.
+      operationId: getObjectGeolocation
+      parameters:
+        - name: scopeId
+          in: path
+          description: Scope of service
+          required: true
+          schema:
+            type: string
+        - name: storageId
+          in: path
+          description: Scope of service
+          required: true
+          schema:
+            type: string          
+        - name: objectId
+          in: path
+          description: ID of data object to return
+          required: true
+          schema:
+            type: string   
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetObjectGeolocationResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiStorage
+      
+  "/iam/users/":
+    get:
+      tags:
+        - Identity and Access Management
+      summary: Returns a list of all users.
+      description: Reads out all users of the IAM system and returns them.
+      operationId: listUsers
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListUsersResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiIam
+  "/iam/users/{userId}":
+    get:
+      tags:
+        - Identity and Access Management
+      summary: Returns information about a user.
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          description: Scope of service
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetUserResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiIam      
+  "/iam/groups/":
+    get:
+      tags:
+        - Identity and Access Management
+      summary: Returns a list of all groups.
+      description: Based on CCM-IAM-12. Reads out all administrators of the application and
+        returns them.
+      operationId: listGroups
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListGroupsResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiIam
+  "/iam/groups/{groupId}":
+    get:
+      tags:
+        - Identity and Access Management
+      summary: Returns information about a group.
+      operationId: getGroup
+      parameters:
+        - name: groupId
+          in: path
+          description: Scope of service
+          required: true
+          schema:
+            type: string        
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListGroupsResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiIam      
+  "/iam/users/{userId}/groups":
+    get:
+      tags:
+        - Identity and Access Management
+      summary: Returns a list of all groups the specified user is assigned to.
+      description: Based on CCM-IAM-12. Depending on the implementation a group can be e.g
+        a unix group, organisation, role etc.
+      operationId: getUserOrganisation
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListUserGroupsResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiIam
+  "/iam/users/{userId}/auth":
+    get:
+      tags:
+        - Identity and Access Management
+      summary: Returns the authentication type of a user, e.g password, two-factor.
+      description: Based on CCM-IAM-12. Reads out a particular users authentication
+        settings and returns them. Propper interpretation has to be performed by
+        the audit tool.
+      operationId: getUserAuthType
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAuth"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiIam
+  "/iam/data/access":
+    post:
+      tags:
+        - Identity and Access Management
+      summary: Checks whether a user has access to a certain resource.
+      description: Checks whether a user has access to a certain resource.
+      operationId: getResourceAccess
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessRequest"
+        description: request object
+        required: true
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiIam
+  "/iam/passwordRequirements":
+    get:
+      tags:
+        - Identity and Access Management
+      summary: Returns the password requirements.
+      operationId: getPasswordRequirements
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user
+          required: true
+          schema:
+            type: string
+        - name: scope
+          in: path
+          description: Scope of the service
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasswordRequirementsResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiIam
+      
+  "/scopes/{scopeId}/containerservices":
+    get:
+      tags:
+        - Container Services
+      summary: Returns a list of container services, e.g. Kubernetes services.
+      operationId: listContainerServices
+      parameters:
+        - name: scopeId
+          in: path
+          description: Scope of service
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListContainerServicesResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiContainers
+  "/scopes/{scopeId}/containerservices/{serviceId}":
+    get:
+      tags:
+        - Container Services
+      summary: Returns information about the specified container service.
+      operationId: getContainerService
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the Scope
+          required: true
+          schema:
+            type: string
+        - name: serviceId
+          in: path
+          description: ID of the requested service
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetContainerServiceResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiContainers
+      
+  "/scopes/{scopeId}/networking/vnets":
+    get:
+      tags:
+        - Networking
+      summary: Returns a list of virtual networks.
+      operationId: listVirtualNetworks
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the Scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListVnetsResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiNetworking
+  "/scopes/{scopeId}/networking/vnets/{networkId}":
+    get:
+      tags:
+        - Networking
+      summary: Returns information about the specified virtual network.
+      operationId: getVirtualNetwork
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the Scope
+          required: true
+          schema:
+            type: string
+        - name: networkId
+          in: path
+          description: ID of the virtual network
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetVnetResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiNetworking
+  "/scopes/{scopeId}/networking/securitygroups":
+    get:
+      tags:
+        - Networking
+      summary: Returns a list of network security groups.
+      operationId: listSecurityGroups
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListNetworkSecurityGroupsResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiNetworking 
+  "/scopes/{scopeId}/networking/securitygroups/{securitygroupId}":
+    get:
+      tags:
+        - Networking
+      summary: Returns information about the specified network security group.
+      operationId: getSecurityGroup
+      parameters:
+        - name: scopeId
+          in: path
+          description: Scope of service
+          required: true
+          schema:
+            type: string
+        - name: securitygroupId
+          in: path
+          description: Id of the network security group
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetNetworkSecurityGroupResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiNetworking 
+  "/scopes/{scopeId}/networking/securitygroups/{securitygroupId}/rules":
+    get:
+      tags:
+        - Networking
+      summary: Returns a list of network security group rules defined for the specified NSG.
+      operationId: listSecurityGroupRules
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the Scope
+          required: true
+          schema:
+            type: string
+        - name: securitygroupId
+          in: path
+          description: Id of the network security group
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListNetworkSecurityGroupRulesResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiNetworking       
+  "/scopes/{scopeId}/networking/securitygroups/{securitygroupId}/rules/{ruleId}":
+    get:
+      tags:
+        - Networking
+      summary: Returns information about the specified network security group rule.
+      operationId: getSecuritygroupRule
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the Scope
+          required: true
+          schema:
+            type: string
+        - name: securitygroupId
+          in: path
+          description: ID of the network security group
+          required: true
+          schema:
+            type: string
+        - name: ruleId
+          in: path
+          description: ID of the network security group rule
+          required: true
+          schema:
+            type: string            
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetNetworkSecurityGroupRuleResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiNetworking     
+  "/scopes/{scopeId}/networking/interfaces":
+    get:
+      tags:
+        - Networking
+      summary: Returns a lsit of network interfaces.
+      operationId: getNetwork
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the Scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListNetworkInterfacesResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiNetworking  
+      
+  "/scopes/{scopeId}/virtualmachines":
+    get:
+      tags:
+        - VM
+      summary: Returns a list of virtual machines.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListVmsResponse"
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiVM
+  "/scopes/{scopeId}/virtualmachines/{virtualmachineId}":
+    get:
+      tags:
+        - VM
+      summary: Returns information about the specified virtual machine.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+        - name: virtualmachineId
+          in: path
+          description: ID of the VM
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetVmResponse"
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiVM
+      
+  "/scopes/{scopeId}/logging/config":
+    get:
+      tags:
+        - Logging
+      summary: Returns information about the logging configuration.
+      description: Returns information about how the logging is configured, such as data retention periods, the storage that is used to store the logs, and regions where logging is enabled.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoggingConfigResponse"
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiLogging                
+  "/scopes/{scopeId}/logging/dataplane/rules":
+    get:
+      tags:
+        - Logging
+      summary: Returns a list of dataplane logging rules.
+      description: Dataplane logs are emitted by resources. The dataplane logging rules specify what kinds of events shall be logged on the data plane, e.g. GET requests to a resource.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListDataplaneRulesResponse"
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiLogging                
+  "/scopes/{scopeId}/logging/dataplane/events":
+    get:
+      tags:
+        - Logging
+      summary: Returns a list of dataplane events.
+      description: The events are the actual logs that have been logged according to the specified rules.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListDataplaneEventsResponse"   
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiLogging                
+  "/scopes/{scopeId}/logging/managementplane/rules":
+    get:
+      tags:
+        - Logging
+      summary: Returns a list of logging rules for actions on the management plane.
+      description: Management plane logs are emitted by the platform. The management plane logging rules specify what kinds of events shall be logged on the management plane, e.g. changes to the access control for a resource.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListManagementplaneRulesResponse"  
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiLogging  
+  "/scopes/{scopeId}/logging/managementplane/events":
+    get:
+      tags:
+        - Logging
+      summary: returns a list of enabled alerts.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListManagementplaneEventsResponse"  
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiLogging        
+  "/scopes/{scopeId}/logging/iam/rules":
+    get:
+      tags:
+        - Logging
+      summary: Returns a list of IAM logging rules.
+      description: IAM logging rules specify what actions shall be logged in the identity and access management service, e.g. the creation of a user.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListIamRulesResponse" 
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiLogging  
+  "/scopes/{scopeId}/logging/iam/events":
+    get:
+      tags:
+        - Logging
+      summary: Returns a list of IAM logging events.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListIamEventsResponse" 
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiLogging        
+  "/scopes/{scopeId}/logging/alerts":
+    get:
+      tags:
+        - Logging
+      summary: Returns a list of logging alerts.
+      description: Logging alerts specify for a certain logging rule, who is alerted and how when an event is logged for that rule.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListLoggingAlertsResponse"   
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiLogging                
+  "/scopes/{scopeId}/logging/alerts/{alertId}":
+    get:
+      tags:
+        - Logging
+      summary: Returns information about the specified alert.
+      description: A logging alert specifies the rule it is associated with, the type of alert it triggers, e.g. email, and the recipient.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+        - name: alertId
+          in: path
+          description: ID of the alert
+          required: true
+          schema:
+            type: string            
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetLoggingAlertResponse"   
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiLogging 
+      
+  "/scopes/{scopeId}/securitycenter/recommendations":
+    get:
+      tags:
+        - Security Center
+      summary: returns an array of recommendations in the security center.
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the scope
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSecurityRecommendationsResponse"
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiSecurity
+      
+servers:
+- url: /audit
+components:
+  securitySchemes:
+    basic_auth:
+      type: http
+      scheme: basic
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+  schemas:
+    ListScopesResponse:
+      type: object
+      properties:
+        scopes:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              name:
+                type: string
+              id:
+                type: string
+          example:
+            - type: tenant
+              name: company-tenant
+              id: t123456
+            - type: subscription
+              name: subscription-dev
+              id: 1234-abcd-5678
+            - type: resource-group
+              name: aks-dev-rg
+              id: 12345678
+      required:
+        - scopes
+    GetScopeResponse:
+      type: object
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+        id:
+          type: string
+      example:
+        - type: tenant
+          name: company-tenant
+          id: t123456
+      required:
+        - type
+        - name
+        - id
+        
+    ListStoragesResponse:
+      type: object
+      properties:
+        storages:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              name:
+                type: string
+              id:
+                type: string
+              geolocation:
+                type: string
+              replications:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+      example:
+        - type: storage account
+          name: bcloud_storage
+          id: t123456
+          geolocation: West Europe
+          replications: 
+          - id: 1234
+          - id: 5678
+      required:
+        - storages    
+    GetStorageResponse:
+      type: object
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+        id:
+          type: string
+        geolocation:
+          type: string
+        replications:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+      example:
+        - type: storage account
+          name: bcloud_storage
+          id: t123456
+          geolocation: West Europe
+          replications: 
+          - id: 1234
+          - id: 5678
+      required:
+        - type
+        - name
+        - id
+        - geolocation
+        - replications
+    ListObjectsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          id:
+            type: string
+          geolocation:
+            type: string
+          replications:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                creationdate:
+                  type: string
+      example:
+        - type: storage account
+          name: bcloud_storage
+          id: t123456
+          geolocation: West Europe
+          replications: 
+          - id: 1234
+          - id: 5678
+      required:
+        - storages    
+    GetObjectResponse:
+      type: object
+      properties:
+        name:
+            type: string
+        id:
+          type: string
+        geolocation:
+          type: string
+        replications:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              creationdate:
+                type: string
+    GetStorageGeolocationResponse:
+      type: object
+      properties:
+        geolocation:
+          type: string      
+    GetObjectGeolocationResponse:
+      type: object
+      properties:
+        geolocation:
+          type: string
+    AdminAuth:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/AuthType"
+        description:
+          type: string
+      required:
+        - type
+    AccessType:
+      type: string
+      enum:
+        - fullAccess
+        - changeAccess
+        - readAccess
+    AuthType:
+      type: string
+      enum:
+        - oneFactor
+        - twoFactor
+        - multiFactor
+    AccessRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+        objectId:
+          type: string
+        access:
+          $ref: "#/components/schemas/AccessType"
+      required:
+        - userId
+        - objectId
+        - access
+    ListGroupsResponse:
+      type: array
+      items:
+        properties:
+          name:
+            type: string
+          users:
+            type: array
+            items:
+              properties:
+                id:
+                  type: string
+      example:
+        - root
+        - awsEc2Full
+      required:
+        - groups
+    ListUserGroupsResponse:
+      type: array
+      items:
+        properties:
+          name:
+            type: string
+    AccessResponse:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+          description: true if access is allowed and false if it is not.
+      required:
+        - allowed
+    ListUsersResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          id:
+            type: string
+    GetUserResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: string            
+    PasswordRequirementsResponse:
+      type: object
+      properties:
+        passwordRequirements:
+          type: object
+          properties:
+            minimalLength:
+              type: integer
+              example: 10
+            upperAndLowerCaseEnforcement:
+              type: boolean
+            numericCharacterEnforcement:
+              type: boolean
+            specialCharacterEnforcement:
+              type: boolean
+    ListContainerServicesResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          id:
+            type: string
+    GetContainerServiceResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        id: 
+          type: string
+    ListVnetsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name: 
+            type: string
+          cidr:
+            type: string
+    GetVnetResponse:
+      type: object
+      properties:
+        name: 
+          type: string
+    ListNetworkSecurityGroupsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name: 
+            type: string
+    GetNetworkSecurityGroupResponse:
+      type: object
+      properties:
+        name: 
+          type: string
+    ListNetworkSecurityGroupRulesResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name: 
+            type: string
+    GetNetworkSecurityGroupRuleResponse:
+      type: object
+      properties:
+        name: 
+          type: string
+    ListNetworkInterfacesResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name: 
+            type: string
+            
+    ListVmsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+      example:
+        - vm1234
+    GetVmResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        
+    LoggingConfigResponse:
+      type: object
+      properties:
+        retention:
+          type: integer
+        storage:
+          type: string
+        regions:
+          type: array
+          items:
+            type: string
+      example:
+        - retention: 365
+          storage: bcloud_storage_account
+          regions:
+          - North Europe
+          - West Europe
+          - US East
+    ListDataplaneRulesResponse:
+      type: array
+      description: A list of log alerts. Alerts are defined for existing rules and trigger a message, e.g. an email, when a corresponding event is logged.
+      items:
+        type: object 
+        properties:
+          ruleId:
+            type: string
+          alertType:
+            type: string
+            description: E.g. email or SMS
+          recipient:
+            type: string
+    ListDataplaneEventsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          action:
+            type: string
+          resourceId:
+            type: string
+          ruleId:
+            type: string
+            description: The logging rule this event corresponds to.
+          timestamp:
+            type: string
+    ListManagementplaneRulesResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          resource:
+            type: string
+          condition:
+            type: string
+          action:
+            type: string
+    ListManagementplaneEventsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          action:
+            type: string
+          caller:
+            type: string
+            description: The caller may be a user ID or an application ID.
+          ruleId:
+            type: string
+          timestamp:
+            type: string
+    ListIamRulesResponse:
+      type: array
+    ListIamEventsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          action:
+            type: string
+          ruleId:
+            type: string
+          timestamp:
+            type: string
+    ListLoggingAlertsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          resource:
+            type: string
+          condition:
+            type: string
+          action:
+            type: string
+    GetLoggingAlertResponse:
+      type: object
+      properties:
+        resource:
+          type: string
+        condition:
+          type: string
+        action:
+          type: string      
+    ListSecurityRecommendationsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
