@@ -12,7 +12,7 @@ tags:
     description: Information about the scopes of a cloud system, e.g. a subscription or a resource group.
   - name: Storage
     description: Information about the storage entities in a scope.
-  - name: Identity and Access Management
+  - name: Identity and Access control
     description: Information about the identity and access management of a cloud system.
   - name: Container Services
     description: Information about the container services in a certain scope.
@@ -520,7 +520,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListGroupsResponse"
+                $ref: "#/components/schemas/GetGroupResponse"
         "405":
           description: Invalid input
       security:
@@ -532,9 +532,7 @@ paths:
       tags:
         - Identity and Access Management
       summary: Returns a list of all groups the specified user is assigned to.
-      description: Based on CCM-IAM-12. Depending on the implementation a group can be e.g
-        a unix group, organisation, role etc.
-      operationId: getUserOrganisation
+      operationId: getUserGroups
       parameters:
         - name: userId
           in: path
@@ -555,15 +553,12 @@ paths:
         - api_key: []
         - basic_auth: []
       x-swagger-router-controller: CaApiIam
-  "/iam/users/{userId}/auth":
+  "/iam/users/{userId}/roles":
     get:
       tags:
         - Identity and Access Management
-      summary: Returns the authentication type of a user, e.g password, two-factor.
-      description: Based on CCM-IAM-12. Reads out a particular users authentication
-        settings and returns them. Propper interpretation has to be performed by
-        the audit tool.
-      operationId: getUserAuthType
+      summary: Returns a list of all roles the specified user is assigned to.
+      operationId: getUserRoles
       parameters:
         - name: userId
           in: path
@@ -577,13 +572,32 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AdminAuth"
+                $ref: "#/components/schemas/ListUserRolesResponse"
         "405":
           description: Invalid input
       security:
         - api_key: []
         - basic_auth: []
-      x-swagger-router-controller: CaApiIam
+      x-swagger-router-controller: CaApiIam 
+  "/iam/roles":
+    get:
+      tags:
+        - Identity and Access Management
+      summary: Returns a list of all roles that are specified in the cloud system.
+      operationId: listRoles
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListRolesResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiIam     
   "/iam/data/access":
     post:
       tags:
@@ -894,7 +908,7 @@ paths:
       tags:
         - Networking
       summary: Returns a lsit of network interfaces.
-      operationId: getNetwork
+      operationId: listNetworkInterfaces
       parameters:
         - name: scopeId
           in: path
@@ -914,7 +928,39 @@ paths:
       security:
         - api_key: []
         - basic_auth: []
-      x-swagger-router-controller: CaApiNetworking  
+      x-swagger-router-controller: CaApiNetworking 
+  "/scopes/{scopeId}/networking/interfaces/{interfaceId}":
+    get:
+      tags:
+        - Networking
+      summary: Returns a lsit of network interfaces.
+      operationId: getNetworkInterface
+      parameters:
+        - name: scopeId
+          in: path
+          description: ID of the Scope
+          required: true
+          schema:
+            type: string
+        - name: interfaceId
+          in: path
+          description: ID of the interface
+          required: true
+          schema:
+            type: string            
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetNetworkInterfaceResponse"
+        "405":
+          description: Invalid input
+      security:
+        - api_key: []
+        - basic_auth: []
+      x-swagger-router-controller: CaApiNetworking       
       
   "/scopes/{scopeId}/virtualmachines":
     get:
@@ -1041,12 +1087,12 @@ paths:
         - api_key: []
         - basic_auth: []
       x-swagger-router-controller: CaApiLogging                
-  "/scopes/{scopeId}/logging/managementplane/rules":
+  "/scopes/{scopeId}/logging/controlplane/rules":
     get:
       tags:
         - Logging
-      summary: Returns a list of logging rules for actions on the management plane.
-      description: Management plane logs are emitted by the platform. The management plane logging rules specify what kinds of events shall be logged on the management plane, e.g. changes to the access control for a resource.
+      summary: Returns a list of logging rules for actions on the control plane.
+      description: Control plane logs are emitted by the platform. The control plane logging rules specify what kinds of events shall be logged on the control plane, e.g. changes to the access control for a resource.
       parameters:
         - name: scopeId
           in: path
@@ -1060,12 +1106,12 @@ paths:
           content: 
             application/json:
               schema:
-                $ref: "#/components/schemas/ListManagementplaneRulesResponse"  
+                $ref: "#/components/schemas/ListControlplaneRulesResponse"  
       security:
         - api_key: []
         - basic_auth: []
       x-swagger-router-controller: CaApiLogging  
-  "/scopes/{scopeId}/logging/managementplane/events":
+  "/scopes/{scopeId}/logging/controlplane/events":
     get:
       tags:
         - Logging
@@ -1083,7 +1129,7 @@ paths:
           content: 
             application/json:
               schema:
-                $ref: "#/components/schemas/ListManagementplaneEventsResponse"  
+                $ref: "#/components/schemas/ListControlplaneEventsResponse"  
       security:
         - api_key: []
         - basic_auth: []
@@ -1227,29 +1273,9 @@ components:
       in: header
   schemas:
     ListScopesResponse:
-      type: object
-      properties:
-        scopes:
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-              name:
-                type: string
-              id:
-                type: string
-          example:
-            - type: tenant
-              name: company-tenant
-              id: t123456
-            - type: subscription
-              name: subscription-dev
-              id: 1234-abcd-5678
-            - type: resource-group
-              name: aks-dev-rg
-              id: 12345678
+      type: array
+      items:
+        $ref: "#/components/schemas/GetScopeResponse"
       required:
         - scopes
     GetScopeResponse:
@@ -1265,44 +1291,21 @@ components:
         - type: tenant
           name: company-tenant
           id: t123456
+        - type: subscription
+          name: subscription-dev
+          id: 1234-abcd-5678
+        - type: resource-group
+          name: aks-dev-rg
+          id: 12345678
       required:
         - type
         - name
         - id
         
     ListStoragesResponse:
-      type: object
-      properties:
-        storages:
-          type: array
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-              name:
-                type: string
-              id:
-                type: string
-              geolocation:
-                type: string
-              replications:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-      example:
-        - type: storage account
-          name: bcloud_storage
-          id: t123456
-          geolocation: West Europe
-          replications: 
-          - id: 1234
-          - id: 5678
-      required:
-        - storages    
+      type: array
+      items:
+        $ref: "#/components/schemas/GetStorageResponse"
     GetStorageResponse:
       type: object
       properties:
@@ -1338,33 +1341,7 @@ components:
     ListObjectsResponse:
       type: array
       items:
-        type: object
-        properties:
-          name:
-            type: string
-          id:
-            type: string
-          geolocation:
-            type: string
-          replications:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: string
-                creationdate:
-                  type: string
-      example:
-        - type: storage account
-          name: bcloud_storage
-          id: t123456
-          geolocation: West Europe
-          replications: 
-          - id: 1234
-          - id: 5678
-      required:
-        - storages    
+        $ref: "#/components/schemas/GetObjectResponse"
     GetObjectResponse:
       type: object
       properties:
@@ -1393,27 +1370,13 @@ components:
       properties:
         geolocation:
           type: string
-    AdminAuth:
-      type: object
-      properties:
-        type:
-          $ref: "#/components/schemas/AuthType"
-        description:
-          type: string
-      required:
-        - type
+          
     AccessType:
       type: string
       enum:
         - fullAccess
         - changeAccess
         - readAccess
-    AuthType:
-      type: string
-      enum:
-        - oneFactor
-        - twoFactor
-        - multiFactor
     AccessRequest:
       type: object
       properties:
@@ -1430,26 +1393,47 @@ components:
     ListGroupsResponse:
       type: array
       items:
-        properties:
-          name:
-            type: string
-          users:
-            type: array
-            items:
-              properties:
-                id:
-                  type: string
-      example:
-        - root
-        - awsEc2Full
-      required:
-        - groups
+        $ref: "#/components/schemas/GetGroupResponse"
+    GetGroupResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: object
+            properties:
+              resource:
+                type: string
+              action:
+                type: string
     ListUserGroupsResponse:
       type: array
       items:
-        properties:
-          name:
-            type: string
+        $ref: "#/components/schemas/GetGroupResponse"
+    ListUserRolesResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/GetRoleResponse"
+    ListRolesResponse:
+      type: array
+      items:
+        $ref: "#/components/schemas/GetRoleResponse"
+    GetRoleResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: object
+            properties:
+              resource:
+                type: string
+              action:
+                type: string
     AccessResponse:
       type: object
       properties:
@@ -1461,19 +1445,40 @@ components:
     ListUsersResponse:
       type: array
       items:
-        type: object
-        properties:
-          name:
-            type: string
-          id:
-            type: string
+        $ref: "#/components/schemas/GetUserResponse"
     GetUserResponse:
       type: object
       properties:
         name:
           type: string
         id:
-          type: string            
+          type: string   
+        authType:
+          type: string
+          description: E.g. one-factor or multi-factor
+        roleAssignments:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+        groupAssignments:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string  
+        permissions:
+          type: array
+          items:
+            type: object
+            properties:
+              resource:
+                type: string
+              action:
+                type: string
     PasswordRequirementsResponse:
       type: object
       properties:
@@ -1492,12 +1497,7 @@ components:
     ListContainerServicesResponse:
       type: array
       items:
-        type: object
-        properties:
-          name:
-            type: string
-          id:
-            type: string
+        $ref: "#/components/schemas/GetContainerServiceResponse"
     GetContainerServiceResponse:
       type: object
       properties:
@@ -1508,12 +1508,7 @@ components:
     ListVnetsResponse:
       type: array
       items:
-        type: object
-        properties:
-          name: 
-            type: string
-          cidr:
-            type: string
+        $ref: "#/components/schemas/GetVnetResponse"
     GetVnetResponse:
       type: object
       properties:
@@ -1522,10 +1517,7 @@ components:
     ListNetworkSecurityGroupsResponse:
       type: array
       items:
-        type: object
-        properties:
-          name: 
-            type: string
+        $ref: "#/components/schemas/GetNetworkSecurityGroupResponse"
     GetNetworkSecurityGroupResponse:
       type: object
       properties:
@@ -1534,10 +1526,7 @@ components:
     ListNetworkSecurityGroupRulesResponse:
       type: array
       items:
-        type: object
-        properties:
-          name: 
-            type: string
+        $ref: "#/components/schemas/GetNetworkSecurityGroupRuleResponse"
     GetNetworkSecurityGroupRuleResponse:
       type: object
       properties:
@@ -1546,20 +1535,16 @@ components:
     ListNetworkInterfacesResponse:
       type: array
       items:
-        type: object
-        properties:
-          name: 
-            type: string
-            
+        $ref: "#/components/schemas/GetNetworkInterfaceResponse"
+    GetNetworkInterfaceResponse:
+      type: object
+      properties:
+        name: 
+          type: string       
     ListVmsResponse:
       type: array
       items:
-        type: object
-        properties:
-          name:
-            type: string
-      example:
-        - vm1234
+        $ref: "#/components/schemas/GetVmResponse"
     GetVmResponse:
       type: object
       properties:
@@ -1586,16 +1571,15 @@ components:
           - US East
     ListDataplaneRulesResponse:
       type: array
-      description: A list of log alerts. Alerts are defined for existing rules and trigger a message, e.g. an email, when a corresponding event is logged.
+      description: A list of data plane log rules. Rules specify which actions against which resources shall be logged.
       items:
         type: object 
         properties:
-          ruleId:
+          id:
             type: string
-          alertType:
+          resourceId:
             type: string
-            description: E.g. email or SMS
-          recipient:
+          action:
             type: string
     ListDataplaneEventsResponse:
       type: array
@@ -1613,40 +1597,58 @@ components:
             description: The logging rule this event corresponds to.
           timestamp:
             type: string
-    ListManagementplaneRulesResponse:
+    ListControlplaneRulesResponse:
+      type: array
+      description: A list of control plane log rules. Control plane rules specify which actions against which resources shall be logged.
+      items:
+        type: object 
+        properties:
+          id:
+            type: string
+          resourceId:
+            type: string
+          action:
+            type: string
+    ListControlplaneEventsResponse:
       type: array
       items:
         type: object
         properties:
-          resource:
-            type: string
-          condition:
-            type: string
-          action:
-            type: string
-    ListManagementplaneEventsResponse:
-      type: array
-      items:
-        type: object
-        properties:
-          action:
+          id:
             type: string
           caller:
             type: string
-            description: The caller may be a user ID or an application ID.
+          action:
+            type: string
+          resourceId:
+            type: string
           ruleId:
             type: string
+            description: The logging rule this event corresponds to.
           timestamp:
             type: string
     ListIamRulesResponse:
       type: array
+      items:
+        type: object 
+        properties:
+          id:
+            type: string
+          action:
+            type: string  
+          resourceId:
+            type: string
     ListIamEventsResponse:
       type: array
       items:
         type: object
         properties:
+          caller:
+            type: string
           action:
             type: string
+          resourceId:
+            type: string            
           ruleId:
             type: string
           timestamp:
@@ -1654,27 +1656,30 @@ components:
     ListLoggingAlertsResponse:
       type: array
       items:
-        type: object
-        properties:
-          resource:
-            type: string
-          condition:
-            type: string
-          action:
-            type: string
+        $ref: "#/components/schemas/GetLoggingAlertResponse"
     GetLoggingAlertResponse:
       type: object
       properties:
-        resource:
-          type: string
-        condition:
-          type: string
         action:
-          type: string      
+          type: string       
+        resourceId:
+          type: string
+        alertType:
+          type: string
+          example:
+            - email
+            - sms
+        recipient:
+          type: string
+          example:
+            - ciso@bcloud.de
+          
     ListSecurityRecommendationsResponse:
       type: array
       items:
         type: object
         properties:
           name:
+            type: string
+          description:
             type: string
