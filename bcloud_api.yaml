@@ -236,7 +236,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListStoragesResponse"
+                $ref: "#/components/schemas/ListStorageReplicationResponse"
         "405":
           description: Invalid input
       security:
@@ -274,7 +274,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetStorageResponse"
+                $ref: "#/components/schemas/GetStorageReplicationResponse"
         "405":
           description: Invalid input
       security:
@@ -285,7 +285,7 @@ paths:
     get:
       tags:
         - Storage
-      summary: Returns a list of replications of the specified storage entity.
+      summary: Returns a list of replications of the specified object.
       operationId: listObjectReplications
       parameters:
         - name: scopeId
@@ -312,7 +312,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListObjectsResponse"
+                $ref: "#/components/schemas/ListObjectReplicationResponse"
         "405":
           description: Invalid input
       security:
@@ -323,7 +323,7 @@ paths:
     get:
       tags:
         - Storage
-      summary: Returns a list of replications for the specified object.
+      summary: Returns information about the specified object replication.
       operationId: getObjectReplication
       parameters:
         - name: scopeId
@@ -356,7 +356,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetObjectResponse"
+                $ref: "#/components/schemas/GetObjectReplicationResponse"
         "405":
           description: Invalid input
       security:
@@ -433,7 +433,6 @@ paths:
         - api_key: []
         - basic_auth: []
       x-swagger-router-controller: CaApiStorage
-      
   "/iam/users/":
     get:
       tags:
@@ -1351,6 +1350,8 @@ components:
           type: string
         geolocation:
           type: string
+        creationdate:
+          type: string
         replications:
           type: array
           items:
@@ -1358,19 +1359,86 @@ components:
             properties:
               id:
                 type: string
-              creationdate:
-                type: string
+      example:
+        - name: bcloud_object_1
+          id: 2345
+          gelocation: West Europe
+          creationdate: 10/15/2019, 9:29:46 AM
+          replications:
+            - id: 1234
+            - id: 9876
+    ListStorageReplicationResponse:
+      type: array
+      items: 
+        $ref: "#/components/schemas/GetStorageReplicationResponse"
+      example:
+        - name: bcloud_storage_replication
+          id: 6789
+          geolocation: East US
+          creationdate: 19/09/19, 19:44:18 PM
+        - name: bcloud_storage_2_replication
+          id: 4726
+          geolocation: West US
+          creationdate: 23/09/19, 19:44:18 PM
+    GetStorageReplicationResponse:
+      type: object
+      properties: 
+        name:
+          type: string
+        id: 
+          type: string
+        gelocation: 
+          type: string
+        creationdate: 
+          type: string
+      example: 
+        - name: bcloud_storage_replication
+          id: 6789
+          geolocation: East US
+          creationdate: 19/09/19, 19:44:18 PM
+    ListObjectReplicationResponse:
+      type: array
+      items: 
+        $ref: "#/components/schemas/GetObjectReplicationResponse"
+      example:
+        - name: bcloud_object_1_replication
+          id: 9876
+          gelocation: East Europe
+          creationdate: 10/19/2019, 9:48:46 AM
+        - name: bcloud_object_1_replication
+          id: 8765
+          gelocation: East US
+          creationdate: 12/19/2019, 14:48:46 AM
+    GetObjectReplicationResponse:
+      type: object
+      properties: 
+        name: 
+          type: string
+        id: 
+          type: string
+        gelocation: 
+          type: string
+        creationdate: 
+          type: string
+      example: 
+        - name: bcloud_object_1_replication
+          id: 9876
+          gelocation: East Europe
+          creationdate: 10/19/2019, 9:48:46 AM
     GetStorageGeolocationResponse:
       type: object
       properties:
         geolocation:
-          type: string      
+          type: string   
+      example:
+        gelocation: East US
     GetObjectGeolocationResponse:
       type: object
       properties:
         geolocation:
           type: string
-          
+      example:
+        gelocation: West US   
     AccessType:
       type: string
       enum:
