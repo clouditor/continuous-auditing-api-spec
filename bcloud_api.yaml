@@ -32,7 +32,7 @@ paths:
       tags:
         - Scopes
       summary: Returns all scopes of the target system.
-      description: A scope can contain different kinds of resources and may, e.g. contain all components of a specific application.
+      description: A scope can contain different kinds of resources and may, e.g. contain all components of a specific application. A scope can comprise, for instance, a subscription or a resource group.
       operationId: listScopes
       responses:
         "200":
@@ -52,7 +52,7 @@ paths:
       tags:
         - Scopes
       summary: Returns information about a specific scopes of the target system.
-      description: A scope can contain different kinds of resources and may, e.g. contain all components of a specific application.
+      description: A scope can contain different kinds of resources and may, e.g. contain all components of a specific application. A scope can comprise, for instance, a subscription or a resource group.
       operationId: getScope
       parameters:
         - name: scopeId
@@ -121,12 +121,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: objectId
-          in: path
-          description: ID of data object to return
-          required: true
-          schema:
-            type: string            
       responses:
         "200":
           description: successful operation
@@ -509,7 +503,7 @@ paths:
       parameters:
         - name: groupId
           in: path
-          description: Scope of service
+          description: ID of the group
           required: true
           schema:
             type: string        
@@ -535,7 +529,7 @@ paths:
       parameters:
         - name: userId
           in: path
-          description: ID of user
+          description: ID of the user
           required: true
           schema:
             type: string
@@ -561,7 +555,7 @@ paths:
       parameters:
         - name: userId
           in: path
-          description: ID of user
+          description: ID of the user
           required: true
           schema:
             type: string
@@ -666,7 +660,7 @@ paths:
       parameters:
         - name: scopeId
           in: path
-          description: Scope of service
+          description: ID of the scope
           required: true
           schema:
             type: string
@@ -809,7 +803,7 @@ paths:
       parameters:
         - name: scopeId
           in: path
-          description: Scope of service
+          description: ID of the scope
           required: true
           schema:
             type: string
@@ -1573,6 +1567,10 @@ components:
           type: string
         id: 
           type: string
+        location:
+          type: string
+        state:
+          type: string
     ListVnetsResponse:
       type: array
       items:
@@ -1580,8 +1578,27 @@ components:
     GetVnetResponse:
       type: object
       properties:
+        id:
+          type: string
         name: 
           type: string
+        cidr:
+          type: string
+        location:
+          type: string
+        subnets:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              cidr:
+                type: string
+              networksecuritygroup:
+                $ref: "#/components/schemas/GetNetworkSecurityGroupResponse"
     ListNetworkSecurityGroupsResponse:
       type: array
       items:
@@ -1589,8 +1606,23 @@ components:
     GetNetworkSecurityGroupResponse:
       type: object
       properties:
+        id:
+          type: string
         name: 
           type: string
+        location:
+          type: string
+        securityrules:
+          type: array
+          items:
+            $ref: "#/components/schemas/GetNetworkSecurityGroupRuleResponse"  
+        subnets:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
     ListNetworkSecurityGroupRulesResponse:
       type: array
       items:
@@ -1598,7 +1630,23 @@ components:
     GetNetworkSecurityGroupRuleResponse:
       type: object
       properties:
+        id:
+          type: string
         name: 
+          type: string
+        destinationcidr:
+          type: string
+        destinationports:
+          type: string
+        direction:
+          type: string
+        priority:
+          type: integer
+        protocol:
+          type: string
+        sourcecidr:
+          type: string
+        sourceports:
           type: string
     ListNetworkInterfacesResponse:
       type: array
