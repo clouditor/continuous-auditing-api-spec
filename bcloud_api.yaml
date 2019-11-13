@@ -1666,7 +1666,30 @@ components:
       properties:
         name:
           type: string
-        
+        id:
+          type: string
+        location:
+          type: string
+        networkinterfaces:
+          type: array
+          items:
+            $ref: "#/components/schemas/GetNetworkInterfaceResponse"
+        os:
+          type: string
+        disks:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              id:
+                type: string
+              sizeGb:
+                type: number
+              encryptionState:
+                type: string
+              
     LoggingConfigResponse:
       type: object
       properties:
